@@ -4,7 +4,7 @@
 
 <!-- ここにページごとのコンテンツを書く -->
     <div class="prose ml-4">
-        <h2 class="text-lg">id: {{ $task->id }} のメッセージ編集ページ</h2>
+        <h2 class="text-lg">id: {{ $task->id }} のタスク編集ページ</h2>
     </div>
 
     <div class="flex justify-center">
@@ -21,7 +21,7 @@
 
                 <div class="form-control my-4">
                     <label for="content" class="label">
-                        <span class="label-text">メッセージ:</span>
+                        <span class="label-text">タスク:</span>
                     </label>
                     <input type="text" name="content" value="{{ $task->content }}" class="input input-bordered w-full">
                 </div>

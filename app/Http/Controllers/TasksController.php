@@ -38,9 +38,11 @@ class TasksController extends Controller
             'content' => 'required|max:10',
         ]);
         
+
         // タスクを作成
         $task = new Task;
         $task->content = $request->content;
+        $task->status = $request->status;
         $task->save();
 
         // トップページへリダイレクトさせる
