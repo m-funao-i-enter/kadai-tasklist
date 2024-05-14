@@ -7,7 +7,7 @@
   <div class="prose ml-4">
         <h2 class="text-lg">タスク 一覧</h2>
     </div>
-
+    
     @if (isset($tasks))
         <table class="table table-zebra w-full my-4">
             <thead>

@@ -8,17 +8,26 @@ use App\Models\Task;
 
 class TasksController extends Controller
 {
-    // getでmessages/にアクセスされた場合の「一覧表示処理」
+    // getでtasks/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
-        $tasks = Task::all();
+        if (\Auth::check()) {
+          $user = \Auth::user();
+            // ユーザーの投稿の一覧を作成日時の降順で取得
+            // （後のChapterで他ユーザーの投稿も取得するように変更しますが、現時点ではこのユーザーの投稿のみ取得します）
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
         
         return view('tasks.index', [
             'tasks' => $tasks,
             ]);
+        }
+        else {
+            return view('dashboard');
+        }
+        
     }
 
-    // getでmessages/createにアクセスされた場合の「新規登録画面表示処理」
+    // getでtasks/createにアクセスされた場合の「新規登録画面表示処理」
     public function create()
     {
         $task = new Task;
@@ -38,18 +47,17 @@ class TasksController extends Controller
             'content' => 'required|max:10',
         ]);
         
-
-        // タスクを作成
-        $task = new Task;
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
-
+        // 認証済みユーザー（閲覧者）の投稿として作成（リクエストされた値をもとに作成）
+        $request->user()->tasks()->create([
+            'status' => $request->status,
+            'content' => $request->content,
+        ]);
+        
         // トップページへリダイレクトさせる
         return redirect('/');
     }
 
-    // getでmessages/（任意のid）にアクセスされた場合の「取得表示処理」
+    // getでtasks/（任意のid）にアクセスされた場合の「取得表示処理」
     public function show(string $id)
     {
         // idの値でタスクを検索して取得
@@ -61,7 +69,7 @@ class TasksController extends Controller
         ]);
     }
 
-    // getでmessages/（任意のid）/editにアクセスされた場合の「更新画面表示処理」
+    // getでtasks/（任意のid）/editにアクセスされた場合の「更新画面表示処理」
     public function edit(string $id)
     {
         // idの値でタスクを検索して取得
@@ -84,10 +92,13 @@ class TasksController extends Controller
         
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
-        // メッセージを更新
-        $task->content = $request->content;
-        $task->save();
-
+        
+        // 認証済みユーザー（閲覧者）の投稿として更新（リクエストされた値をもとに作成）
+        $request->user()->tasks()->update([
+            'status' => $request->status,
+            'content' => $request->content,
+        ]);
+        
         // トップページへリダイレクトさせる
         return redirect('/');
     }
