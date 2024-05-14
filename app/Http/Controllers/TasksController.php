@@ -63,10 +63,21 @@ class TasksController extends Controller
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
-        // タスク詳細ビューでそれを表示
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+    
+        // // タスク詳細ビューでそれを表示
+        // return view('tasks.show', [
+        //     'task' => $task,
+        // ]);
+        
+        // 認証済みユーザー（閲覧者）がその投稿の所有者である場合は投稿を表示
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.show', [
+                'task' => $task,
+            ]);
+        }
+        
+        // トップページへリダイレクトさせる
+        return redirect('/');
     }
 
     // getでtasks/（任意のid）/editにアクセスされた場合の「更新画面表示処理」
@@ -75,10 +86,15 @@ class TasksController extends Controller
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
-        // タスク編集ビューでそれを表示
-        return view('tasks.edit', [
+        
+        // 認証済みユーザー（閲覧者）がその投稿の所有者である場合は投稿を編集
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.edit', [
             'task' => $task,
-        ]);
+            ]);
+        }
+        // トップページへリダイレクトさせる
+        return redirect('/');
     }
 
     // putまたはpatchでtasks/（任意のid）にアクセスされた場合の「更新処理」
